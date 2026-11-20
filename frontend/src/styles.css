@@ -1,0 +1,112 @@
+/* TaskFlow look (from the UI/UX design), applied to the React app */
+:root{--bg:#f4f6fb;--white:#fff;--primary:#5267e8;--primary-dark:#4054d2;--text:#172033;--muted:#788399;--border:#e7eaf1;--green:#1b9a70;--red:#d94d5c;--amber:#d48a18}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+a{color:var(--primary)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* auth */
+.auth-wrapper{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 15%,#dfe5ff,transparent 35%),radial-gradient(circle at 90% 85%,#e1f5ef,transparent 30%),var(--bg)}
+.auth-card{width:100%;max-width:430px;background:#fff;padding:36px;border-radius:22px;border:1px solid var(--border);box-shadow:0 12px 35px rgba(31,43,82,.08)}
+.brand{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:800}
+.brand-icon{width:40px;height:40px;background:var(--primary);color:#fff;border-radius:12px;display:grid;place-items:center}
+.auth-card h1{margin-top:30px;font-size:28px}
+.subtitle{color:var(--muted);margin:7px 0 25px}
+.field{margin:16px 0}.field label{display:block;font-size:13px;font-weight:650;margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fff;color:var(--text)}
+.field input:focus,.field select:focus,.field textarea:focus,.toolbar input:focus,.toolbar select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #5267e81a}
+.btn{border:none;padding:11px 17px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+.btn-secondary{background:#eef0ff;color:var(--primary)}
+.btn-danger{background:#fff0f0;color:var(--red)}
+.btn-sm{padding:6px 11px;font-size:13px}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn-block{width:100%;margin-top:10px}
+.auth-footer{text-align:center;margin-top:22px;font-size:13px;color:var(--muted)}
+.text-button{background:none;border:none;color:var(--primary);font-weight:bold;text-decoration:none}
+.error{background:#fff0f0;color:var(--red);border:1px solid #f3c3c8;padding:10px 12px;border-radius:10px;margin:12px 0;font-size:14px}
+
+/* layout */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:245px;background:#fff;border-right:1px solid var(--border);padding:25px 17px;display:flex;flex-direction:column;z-index:5}
+.sidebar .brand{padding:0 9px 35px}
+.nav-label{font-size:10px;font-weight:800;letter-spacing:1px;color:#a0a8b8;padding:0 12px;margin-bottom:10px}
+.nav{width:100%;padding:12px;display:flex;align-items:center;gap:12px;border:none;border-radius:10px;background:none;color:#657087;font-weight:650;text-align:left;margin:3px 0;text-decoration:none}
+.nav:hover,.nav.active{background:#eef0ff;color:var(--primary)}
+.nav-icon{width:20px;text-align:center;font-size:17px}
+.sidebar-bottom{margin-top:auto}
+.profile{display:flex;align-items:center;gap:10px;padding:15px 8px;border-top:1px solid var(--border);margin-top:15px}
+.avatar{width:38px;height:38px;flex:none;background:#e9edff;color:var(--primary);border-radius:50%;display:grid;place-items:center;font-weight:bold}
+.profile small{display:block;color:var(--muted);font-size:11px}
+.role-pill{font-size:10px;font-weight:800;background:#eef0ff;color:var(--primary);border-radius:20px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.main{margin-left:245px;padding:35px clamp(20px,4vw,55px);max-width:1600px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
+.eyebrow{color:var(--muted);font-size:12px;font-weight:bold}
+.topbar h1{font-size:29px;margin-top:4px}
+.welcome{color:var(--muted);margin-top:4px}
+.top-actions{display:flex;gap:10px}
+.mobile-menu{display:none}
+.backdrop{display:none}
+
+/* dashboard */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:25px 0}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:20px}
+.stat-label{color:var(--muted);font-size:13px;font-weight:650}
+.stat-card strong{display:block;font-size:29px;margin-top:12px}
+.stat-card small{color:var(--muted)}
+.stat-icon{float:right;background:#eef0ff;color:var(--primary);padding:8px;border-radius:9px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:16px;margin-bottom:20px}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--border);gap:10px}
+.panel-header h2{font-size:17px}.panel-header p{color:var(--muted);font-size:12px;margin-top:4px}
+.panel-body{padding:20px}
+.progress-head{display:flex;align-items:baseline;gap:.8rem;margin-bottom:.7rem}.big{font-size:2.2rem;font-weight:800;line-height:1}
+.muted{color:var(--muted)}
+.bar{display:flex;height:10px;border-radius:7px;overflow:hidden;background:#eff1f5}
+.legend{display:flex;gap:1.2rem;list-style:none;margin:.8rem 0 0;font-size:.9rem;flex-wrap:wrap;color:var(--muted)}
+.dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;margin-right:.35rem}
+.s-pending{background:#a0a8b8}.s-in_progress{background:var(--primary)}.s-completed{background:var(--green)}
+@media(prefers-reduced-motion:no-preference){.bar i{transition:flex .4s}}
+
+/* tasks */
+.toolbar{display:flex;gap:10px;padding:17px 20px;flex-wrap:wrap}
+.toolbar input,.toolbar select{padding:11px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fff;color:var(--text)}
+.toolbar input{flex:1;min-width:190px}.toolbar select{min-width:130px}
+.task-list{padding:0 20px 12px}
+.task-row{display:flex;align-items:center;gap:14px;padding:17px 3px;border-bottom:1px solid #eff1f5}
+.task-row:last-child{border-bottom:none}
+.task-check{width:20px;height:20px;accent-color:var(--primary);flex:none}
+.task-content{flex:1;min-width:0}
+.task-title{font-weight:700}.task-description{font-size:12px;color:var(--muted);margin-top:3px}
+.completed-title{text-decoration:line-through;color:#9aa3b2}
+.task-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.badge{font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;text-transform:capitalize}
+.high{background:#fff0f0;color:var(--red)}.medium{background:#fff6e7;color:var(--amber)}.low{background:#eaf8f2;color:var(--green)}
+.pending{background:#f0f2f7;color:#657087}.in-progress{background:#edf1ff;color:var(--primary)}.completed{background:#eaf8f2;color:var(--green)}
+.due{color:var(--muted);font-size:11px}.due.late{color:var(--red);font-weight:700}
+.task-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.empty{text-align:center;padding:55px 15px;color:var(--muted)}
+.row-link{font-weight:700;color:var(--text);text-decoration:none}.row-link:hover{color:var(--primary)}
+.mt{margin-top:.6rem}
+
+/* modal + toast */
+.modal-backdrop{position:fixed;inset:0;background:#10182b70;display:grid;place-items:center;padding:20px;z-index:20}
+.modal{width:100%;max-width:560px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:18px}
+.modal-header{padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-header .subtitle{margin:4px 0 0;font-size:13px}
+.icon-button{border:none;background:transparent;color:#8993a5;padding:8px;border-radius:8px}.icon-button:hover{background:#f2f4f9;color:var(--text)}
+.modal-body{padding:20px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}.modal-grid .wide{grid-column:1/-1}
+.modal textarea{min-height:90px;resize:vertical}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;padding:0 20px 20px}
+
+/* responsive */
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.sidebar{width:210px}.main{margin-left:210px}}
+@media(max-width:650px){
+  .sidebar{width:245px;transform:translateX(-100%);transition:.2s;box-shadow:0 5px 25px #0002}
+  .sidebar.open{transform:translateX(0)}
+  .backdrop.open{display:block;position:fixed;inset:0;background:#10182b50;z-index:4}
+  .main{margin-left:0;padding:22px 15px}.mobile-menu{display:inline-block}
+  .topbar h1{font-size:24px}.stats{gap:10px}.stat-card{padding:14px}.stat-card strong{font-size:24px}
+  .toolbar select{flex:1}.task-list{padding:0 12px}.task-row{gap:9px;flex-wrap:wrap}
+  .modal-grid{grid-template-columns:1fr}.modal-grid .wide{grid-column:auto}
+}
