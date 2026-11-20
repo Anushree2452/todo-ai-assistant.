@@ -1,0 +1,7 @@
+sqlalchemy
+pymysql
+cryptography
+certifi
+python-dotenv
+alembic
+bcrypt
