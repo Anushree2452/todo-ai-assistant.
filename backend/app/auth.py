@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.database import get_db
 from app.models import User, UserRole
-from app.schemas import UserRegister, UserResponse, Token
+from app.schemas import UserRegister, UserResponse, LoginRequest, LoginResponse
 from app.security import (
     hash_password,
     verify_password,
@@ -84,39 +83,35 @@ def authenticate_user(email, password, db):
 
 
 # User Login
-@router.post("/login", response_model=Token)
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
+
+@router.post("/login", response_model=LoginResponse)
+def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_user(
-        form_data.username,
-        form_data.password,
+        credentials.email,
+        credentials.password,
         db
     )
 
     access_token = create_access_token(
-        data={
-            "sub": str(user.id),
-            "role": user.role.value
-        }
+        data={"sub": str(user.id), "role": user.role.value}
     )
 
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "name": user.name,
+        "role": user.role.value.lower()
     }
 
 
+
 # Admin Login
-@router.post("/admin/login", response_model=Token)
-def admin_login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
+
+@router.post("/admin/login", response_model=LoginResponse)
+def admin_login(credentials: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_user(
-        form_data.username,
-        form_data.password,
+        credentials.email,
+        credentials.password,
         db
     )
 
@@ -127,15 +122,14 @@ def admin_login(
         )
 
     access_token = create_access_token(
-        data={
-            "sub": str(user.id),
-            "role": user.role.value
-        }
+        data={"sub": str(user.id), "role": user.role.value}
     )
 
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "name": user.name,
+        "role": user.role.value.lower()
     }
 
 
