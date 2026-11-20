@@ -5,3 +5,8 @@ certifi
 python-dotenv
 alembic
 bcrypt
+fastapi
+uvicorn
+PyJWT
+python-multipart
+email-validator
