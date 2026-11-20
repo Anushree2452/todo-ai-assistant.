@@ -31,7 +31,7 @@ export default function AdminUsers() {
               <div className="avatar">{initial(u.name)}</div>
               <div className="task-content">
                 <Link className="row-link" to={`/admin/users/${u.id}`}>{u.name}</Link>{u.role === "admin" && <span className="role-pill">Admin</span>}
-                <div className="task-description">{u.email} · joined {u.created_at.slice(0, 10)}</div>
+                <div className="task-description">{u.email}{u.created_at ? ` · joined ${u.created_at.slice(0, 10)}` : ""}</div>
                 <div className="task-meta">
                   <span className="badge pending">Pending {u.pending}</span>
                   <span className="badge in-progress">In progress {u.in_progress}</span>

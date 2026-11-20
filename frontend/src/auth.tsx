@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { api, tokenStore } from "./api";
+import { api, normRole, tokenStore } from "./api";
 import type { Role } from "./types";
 
 interface AuthCtx {
@@ -26,27 +26,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("auth:expired", expire);
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const r = await api.login(email, password);
-    const rl: Role = r.role === "admin" ? "admin" : "user";
-    return { r, rl };
-  };
-  const commit = (token: string, n: string, rl: Role) => {
-    tokenStore.set(token);
-    localStorage.setItem("taskly_name", n); localStorage.setItem("taskly_role", rl);
-    setName(n); setRole(rl); setLoggedIn(true);
+  /** Log in with the given call; the backend returns the token plus the user's name and role. */
+  const signIn = async (call: typeof api.login, email: string, password: string) => {
+    const res = await call(email, password);
+    tokenStore.set(res.access_token);
+    try {
+      let { name: nm, role: rr } = res;
+      if (!nm || !rr) { const me = await api.me(); nm = me.name; rr = me.role; } // fallback if not in response
+      const rl = normRole(rr);
+      localStorage.setItem("taskly_name", nm!); localStorage.setItem("taskly_role", rl);
+      setName(nm!); setRole(rl); setLoggedIn(true);
+      return rl;
+    } catch (e) { tokenStore.clear(); throw e; }
   };
 
-  const login = async (email: string, password: string) => {
-    const { r, rl } = await signIn(email, password);
-    commit(r.access_token, r.name ?? email.split("@")[0], rl);
-    return rl;
-  };
-  const adminLogin = async (email: string, password: string) => {
-    const { r, rl } = await signIn(email, password);
-    if (rl !== "admin") throw new Error("This account does not have admin access.");
-    commit(r.access_token, r.name ?? email.split("@")[0], rl);
-  };
+  const login = (email: string, password: string) => signIn(api.login, email, password);
+  const adminLogin = async (email: string, password: string) => { await signIn(api.adminLogin, email, password); }; // backend returns 403 for non-admins
   const register = async (n: string, email: string, password: string) => {
     await api.register(n, email, password); // public sign-up always creates role=user (enforced by backend)
     await login(email, password);

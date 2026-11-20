@@ -46,3 +46,12 @@ Each portal redirects the other role to its own home. Hiding links is only UX: *
 ## Styling
 The look comes from the team's UI/UX design (`frontend/index.html` in the group repo: sidebar layout, stat cards, badges, task modal).
 It is rebuilt here in React; shared pieces are in `src/components.tsx` and all styles in `src/styles.css`.
+
+## Connecting to the backend that exists today (Vaishnavi's task CRUD)
+`src/api.ts` already adapts to her API: status `InProgress` <-> `in_progress`, updates use PUT, roles accept `Admin`/`User`,
+and `created_at` is optional. Status / search / sort are also applied in the browser, because her list route ignores them.
+
+Until JWT login is merged, her routes need `?user_id=`. For local testing only, copy `.env.example` to `.env` and set `VITE_DEV_USER_ID=2`
+(the seed user). **Remove that shim in `api.ts` once the backend reads the user from the token.**
+
+Run: backend on port 8000 (`uvicorn app.main:app --reload` inside `backend/`), then `npm run dev` here.

@@ -4,6 +4,16 @@ import { api } from "../api";
 import { STATUS_LABEL, TaskRow } from "../components";
 import type { Priority, Status, Task } from "../types";
 
+const PRI = { high: 0, medium: 1, low: 2 };
+/** The backend may ignore status / q / sort, so apply them here too (harmless if it already did). */
+function refine(list: Task[], status: string, q: string, sort: string): Task[] {
+  const needle = q.trim().toLowerCase();
+  const out = list.filter((t) => (!status || t.status === status) && (!needle || t.title.toLowerCase().includes(needle)));
+  if (sort === "due_date") out.sort((a, b) => (a.due_date ?? "9999").localeCompare(b.due_date ?? "9999"));
+  else if (sort === "priority") out.sort((a, b) => PRI[a.priority] - PRI[b.priority]);
+  else out.sort((a, b) => b.id - a.id);
+  return out;
+}
 const blank = { title: "", description: "", priority: "medium" as Priority, due_date: "", status: "pending" as Status };
 
 export default function Tasks() {
@@ -14,7 +24,7 @@ export default function Tasks() {
   const [params, setParams] = useSearchParams();
 
   const load = useCallback(async () => {
-    try { setError(""); setTasks(await api.listTasks({ status, q, sort })); }
+    try { setError(""); setTasks(refine(await api.listTasks({ status, q, sort }), status, q, sort)); }
     catch (e) { setError(e instanceof Error ? e.message : "Could not load tasks."); }
     finally { setLoading(false); }
   }, [status, q, sort]);
