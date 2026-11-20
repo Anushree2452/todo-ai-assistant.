@@ -16,7 +16,7 @@ export default function Dashboard() {
   const pending = count("pending"), progress = count("in_progress"), done = count("completed");
   const total = tasks.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
-  const recent = [...tasks].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 5);
+  const recent = [...tasks].sort((a, b) => b.id - a.id) // newest first (ids grow with creation).slice(0, 5);
 
   return (
     <>
