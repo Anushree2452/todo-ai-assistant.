@@ -77,7 +77,9 @@ export const api = {
 
   listTasks: async (p: { status?: string; q?: string; sort?: string } = {}) => {
     const qs = new URLSearchParams();
-    Object.entries(p).forEach(([k, v]) => v && qs.set(k, k === "status" ? STATUS_TO_API[v as Status] ?? v : v));
+    if (p.status) qs.set("status", STATUS_TO_API[p.status as Status] ?? p.status);
+    if (p.q) qs.set("q", p.q);
+    qs.set("sort", "desc");
     return (await req<unknown[]>(`/api/tasks?${qs}`)).map(fromApiTask);
   },
   createTask: async (t: TaskInput) => fromApiTask(await req("/api/tasks", { method: "POST", body: JSON.stringify(toApiBody(t)) })),
