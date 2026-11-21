@@ -1,5 +1,53 @@
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from datetime import date, datetime
+from typing import Optional, Literal
 
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Field,
+    ConfigDict,
+    field_validator,
+)
+
+
+# TASK SCHEMAS
+
+TaskStatus = Literal["Pending", "InProgress", "Completed"]
+TaskPriority = Literal["low", "medium", "high"]
+
+
+class TaskCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    status: TaskStatus = "Pending"
+    priority: TaskPriority = "medium"
+    due_date: Optional[date] = None
+    category_id: Optional[int] = None
+
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    due_date: Optional[date] = None
+    category_id: Optional[int] = None
+
+
+class TaskResponse(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    description: Optional[str]
+    status: str
+    priority: str
+    due_date: Optional[date]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# AUTHENTICATION SCHEMAS
 
 class UserRegister(BaseModel):
     name: str = Field(min_length=2, max_length=100)

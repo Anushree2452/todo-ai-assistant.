@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func, case
 from sqlalchemy.orm import Session
+from app.schemas import TaskResponse
 
 from app.database import get_db
 from app.models import User, Task, TaskStatus
@@ -41,7 +42,7 @@ def get_all_users(
 
     results = db.execute(query).all()
 
-   
+
     return [
         {
             "id": row.id,
@@ -93,7 +94,7 @@ def get_user_by_id(
             detail="User not found"
         )
 
-    
+
     return {
         "id": row.id,
         "name": row.name,
@@ -105,3 +106,24 @@ def get_user_by_id(
         "total": row.total
     }
 
+@router.get("/users/{user_id}/tasks", response_model=list[TaskResponse])
+def get_user_tasks(
+    user_id: int,
+    status: TaskStatus = None,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin)
+):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    query = db.query(Task).filter(Task.user_id == user_id)
+
+    if status is not None:
+        query = query.filter(Task.status == status)
+
+    return query.all()

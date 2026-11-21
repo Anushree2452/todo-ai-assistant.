@@ -3,13 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import router as auth_router
 from app.admin import router as admin_router
+from app.routes.tasks import router as tasks_router
+
 app = FastAPI(
     title="To-Do Application API",
     description="User and Admin Authentication APIs",
     version="1.0.0"
 )
 
-# Allow frontend to communicate with backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -21,9 +22,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Include authentication routes
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(tasks_router)
+
 
 @app.get("/")
 def home():
