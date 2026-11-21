@@ -1,31 +1,34 @@
+from typing import Optional, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Task, Category
+from app.models import Task, Category, User
+from app.dependencies import get_current_user
 from app.schemas import TaskCreate, TaskUpdate, TaskResponse
 
 router = APIRouter(prefix="/api/tasks", tags=["Tasks"])
 
 
-# 1. CREATE TASK
+# CREATE TASK
+@router.post("", response_model=TaskResponse)
 @router.post("/", response_model=TaskResponse)
 def create_task(
     task: TaskCreate,
-    user_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     if task.category_id is not None:
         category = db.query(Category).filter(
             Category.id == task.category_id,
-            Category.user_id == user_id
+            Category.user_id == current_user.id
         ).first()
 
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
 
-    new_task = Task(**task.model_dump(), user_id=user_id)
+    new_task = Task(**task.model_dump(), user_id=current_user.id)
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
@@ -33,25 +36,42 @@ def create_task(
     return new_task
 
 
-# 2. GET ALL TASKS
+# GET ALL TASKS WITH FILTERS
+@router.get("", response_model=list[TaskResponse])
 @router.get("/", response_model=list[TaskResponse])
 def get_tasks(
-    user_id: int,
+    status: Optional[Literal["Pending", "InProgress", "Completed"]] = None,
+    q: Optional[str] = None,
+    sort: Literal["asc", "desc"] = "desc",
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return db.query(Task).filter(Task.user_id == user_id).all()
+    query = db.query(Task).filter(Task.user_id == current_user.id)
+
+    if status:
+        query = query.filter(Task.status == status)
+
+    if q:
+        query = query.filter(Task.title.ilike(f"%{q}%"))
+
+    if sort == "asc":
+        query = query.order_by(Task.created_at.asc())
+    else:
+        query = query.order_by(Task.created_at.desc())
+
+    return query.all()
 
 
-# 3. GET ONE TASK
+# GET ONE TASK
 @router.get("/{task_id}", response_model=TaskResponse)
 def get_task(
     task_id: int,
-    user_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     task = db.query(Task).filter(
         Task.id == task_id,
-        Task.user_id == user_id
+        Task.user_id == current_user.id
     ).first()
 
     if not task:
@@ -60,17 +80,17 @@ def get_task(
     return task
 
 
-# 4. UPDATE TASK
+# UPDATE TASK
 @router.put("/{task_id}", response_model=TaskResponse)
 def update_task(
     task_id: int,
     task_data: TaskUpdate,
-    user_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     task = db.query(Task).filter(
         Task.id == task_id,
-        Task.user_id == user_id
+        Task.user_id == current_user.id
     ).first()
 
     if not task:
@@ -81,7 +101,7 @@ def update_task(
     if updates.get("category_id") is not None:
         category = db.query(Category).filter(
             Category.id == updates["category_id"],
-            Category.user_id == user_id
+            Category.user_id == current_user.id
         ).first()
 
         if not category:
@@ -96,16 +116,16 @@ def update_task(
     return task
 
 
-# 5. DELETE TASK
+# DELETE TASK
 @router.delete("/{task_id}")
 def delete_task(
     task_id: int,
-    user_id: int,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     task = db.query(Task).filter(
         Task.id == task_id,
-        Task.user_id == user_id
+        Task.user_id == current_user.id
     ).first()
 
     if not task:
