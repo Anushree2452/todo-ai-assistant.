@@ -2,11 +2,19 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { Legend, StatCard, StatusBar, TaskRow } from "../components";
-import type { Task } from "../types";
+import type { AiPlan, AiProvider, Task } from "../types";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [error, setError] = useState("");
+  // "Plan my day" (AI)
+  const [plan, setPlan] = useState<AiPlan | null>(null); const [planBusy, setPlanBusy] = useState(false); const [planErr, setPlanErr] = useState("");
+  const [provider] = useState<AiProvider>("gemini");
+  const makePlan = async () => {
+    setPlanBusy(true); setPlanErr("");
+    try { setPlan(await api.aiPlan(provider)); } catch (e) { setPlan(null); setPlanErr(e instanceof Error ? e.message : "AI request failed."); }
+    finally { setPlanBusy(false); }
+  };
   useEffect(() => { api.listTasks().then(setTasks).catch((e) => setError(e.message)); }, []);
 
   if (error) return <div className="error">{error}</div>;
@@ -16,7 +24,7 @@ export default function Dashboard() {
   const pending = count("pending"), progress = count("in_progress"), done = count("completed");
   const total = tasks.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
-  const recent = [...tasks].sort((a, b) => b.id - a.id) // newest first (ids grow with creation).slice(0, 5);
+  const recent = [...tasks].sort((a, b) => b.id - a.id).slice(0, 5); // newest first (ids grow with creation)
 
   return (
     <>
@@ -34,6 +42,23 @@ export default function Dashboard() {
           <Legend pending={pending} in_progress={progress} completed={done} />
         </section>
       )}
+
+      <section className="panel">
+        <div className="panel-header">
+          <div><h2>✨ Plan my day</h2><p>AI suggests what to do first from your open tasks.</p></div>
+          <div className="ai-row">
+            <span className="ai-chip">Gemini</span>
+            <button className="btn btn-primary" onClick={makePlan} disabled={planBusy || total - done === 0}>{planBusy ? "Thinking…" : "Plan my day"}</button>
+          </div>
+        </div>
+        {planErr && <div className="error" role="alert">{planErr}</div>}
+        {plan && (
+          <div className="panel-body">
+            <p className="ai-summary">{plan.summary} <span className="ai-chip">{plan.provider === "gemini" ? "Gemini" : "Grok"}</span></p>
+            <ol className="ai-plan">{plan.plan.map((p) => <li key={p.task_id}><strong>{p.title}</strong><span className="muted"> — {p.reason}</span></li>)}</ol>
+          </div>
+        )}
+      </section>
 
       <section className="panel">
         <div className="panel-header">
