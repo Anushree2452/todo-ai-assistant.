@@ -1,4 +1,4 @@
-import type { AdminUser, Role, Status, Task, TaskInput } from "./types";
+import type { AdminUser, AiParsedTask, AiPlan, AiProvider, Role, Status, Task, TaskInput } from "./types";
 
 const BASE = import.meta.env.VITE_API_URL ?? "";
 const KEY = "taskly_token";
@@ -86,6 +86,12 @@ export const api = {
   updateTask: async (id: number, t: Partial<TaskInput>) =>
     fromApiTask(await req(`/api/tasks/${id}`, { method: UPDATE_METHOD, body: JSON.stringify(toApiBody(t)) })),
   deleteTask: (id: number) => req<void>(`/api/tasks/${id}`, { method: "DELETE" }),
+
+  // AI features (Gemini / Grok). The API keys live only on the backend.
+  aiParseTask: (text: string, provider?: AiProvider) =>
+    req<AiParsedTask>("/api/ai/parse-task", { method: "POST", body: JSON.stringify({ text, provider }) }),
+  aiPlan: (provider?: AiProvider) =>
+    req<AiPlan>("/api/ai/plan", { method: "POST", body: JSON.stringify({ provider }) }),
 
   // Admin-only (backend must return 403 for role=user)
   adminUsers: async (): Promise<AdminUser[]> =>

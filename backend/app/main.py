@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth import router as auth_router
 from app.admin import router as admin_router
 from app.routes.tasks import router as tasks_router
+from app.ai import router as ai_router
 
 app = FastAPI(
     title="To-Do Application API",
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(tasks_router)
+app.include_router(ai_router)
 
 
 @app.get("/")

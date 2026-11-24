@@ -110,3 +110,13 @@ a{color:var(--primary)}
   .toolbar select{flex:1}.task-list{padding:0 12px}.task-row{gap:9px;flex-wrap:wrap}
   .modal-grid{grid-template-columns:1fr}.modal-grid .wide{grid-column:auto}
 }
+
+/* AI features */
+.ai-box{background:#f6f7ff;border:1px dashed #c9cffa;border-radius:12px;padding:12px 14px}
+.ai-box textarea{min-height:60px}
+.ai-row{display:flex;gap:10px;align-items:center}
+.ai-row select{padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.ai-msg{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.ai-summary{margin:0 0 10px}
+.ai-chip{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#eef0ff;color:var(--primary);font-size:12px;font-weight:650}
+.ai-plan{margin:0;padding-left:20px;display:grid;gap:8px}

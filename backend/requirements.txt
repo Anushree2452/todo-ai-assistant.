@@ -10,3 +10,4 @@ uvicorn
 PyJWT
 python-multipart
 email-validator
+httpx
