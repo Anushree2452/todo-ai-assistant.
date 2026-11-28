@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth import router as auth_router
 from app.admin import router as admin_router
 from app.routes.tasks import router as tasks_router
+from app.routes.ai import router as ai_router
 
 app = FastAPI(
     title="To-Do Application API",
@@ -13,7 +14,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Read allowed origins from env, with localhost defaults for dev
 origins = os.getenv(
     "CORS_ORIGINS",
     "http://localhost:3000,http://localhost:5173"
@@ -30,6 +30,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(tasks_router)
+app.include_router(ai_router)
 
 
 @app.get("/")

@@ -4,3 +4,21 @@ backend/.env
 backend/.venv/
 __pycache__/
 *.pyc
+# Frontend
+node_modules/
+dist/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Sensitive information
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/

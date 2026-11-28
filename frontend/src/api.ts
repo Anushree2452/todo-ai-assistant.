@@ -67,6 +67,11 @@ const jsonLogin = (path: string, email: string, password: string) =>
   req<LoginResult>(path, { method: "POST", body: JSON.stringify({ email, password }) });
 
 export const api = {
+    breakdownTask: (task: string) =>
+    req<{ task: string; breakdown: string }>("/api/ai/breakdown", {
+      method: "POST",
+      body: JSON.stringify({ task }),
+    }),
   register: (name: string, email: string, password: string) =>
     req<unknown>("/api/auth/register", { method: "POST", body: JSON.stringify({ name, email, password }) }),
   // Backend login takes JSON {email, password} and returns {access_token, name, role}.

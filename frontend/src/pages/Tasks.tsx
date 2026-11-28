@@ -22,6 +22,7 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true); const [error, setError] = useState("");
   const [form, setForm] = useState(blank); const [editId, setEditId] = useState<number | null>(null); const [showForm, setShowForm] = useState(false);
   const [params, setParams] = useSearchParams();
+  const [aiLoading, setAiLoading] = useState(false);
 
   const load = useCallback(async () => {
     try { setError(""); setTasks(refine(await api.listTasks({ status, q, sort }), status, q, sort)); }
@@ -40,6 +41,32 @@ export default function Tasks() {
     setEditId(t.id); setShowForm(true);
   };
 
+  const generateBreakdown = async () => {
+  const title = form.title.trim();
+
+  if (title.length < 3) {
+    setError("Enter a task title first.");
+    return;
+  }
+
+  setAiLoading(true);
+  setError("");
+
+  try {
+    const result = await api.breakdownTask(title);
+
+    setForm((prev) => ({
+      ...prev,
+      description: result.breakdown.slice(0, 500),
+    }));
+  } catch (e) {
+    setError(
+      e instanceof Error ? e.message : "AI generation failed."
+    );
+  } finally {
+    setAiLoading(false);
+  }
+};
   const save = async (e: FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return setError("Give the task a title.");
@@ -110,6 +137,16 @@ export default function Tasks() {
             <form onSubmit={save}>
               <div className="modal-body"><div className="modal-grid">
                 <div className="field wide"><label htmlFor="tt">Task Title *</label><input id="tt" autoFocus required maxLength={120} placeholder="e.g. Complete project report" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                <div className="field wide">
+  <button
+    type="button"
+    className="btn btn-secondary"
+    onClick={generateBreakdown}
+    disabled={aiLoading || form.title.trim().length < 3}
+  >
+    {aiLoading ? "Generating subtasks..." : "✨ Break down with AI"}
+  </button>
+</div>
                 <div className="field wide"><label htmlFor="td">Description</label><textarea id="td" maxLength={500} placeholder="Add a few details..." value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
                 <div className="field"><label htmlFor="tp">Priority</label><select id="tp" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value as Priority })}><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select></div>
                 <div className="field"><label htmlFor="ts">Status</label><select id="ts" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Status })}>{Object.entries(STATUS_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></div>
